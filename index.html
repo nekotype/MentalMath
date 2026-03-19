@@ -30,6 +30,7 @@
       min-height: 100vh;
       font-family: var(--font-body);
       color: var(--text);
+      -webkit-text-size-adjust: 100%;
       background:
         radial-gradient(circle at top left, rgba(255, 213, 163, 0.9), transparent 32%),
         radial-gradient(circle at bottom right, rgba(214, 127, 77, 0.28), transparent 28%),
@@ -37,15 +38,15 @@
     }
 
     .shell {
-      width: min(1120px, calc(100% - 32px));
+      width: min(680px, calc(100% - 24px));
       margin: 0 auto;
-      padding: 28px 0 48px;
+      padding: 18px 0 32px;
     }
 
     .hero {
-      padding: 28px;
+      padding: 22px 20px;
       border: 1px solid var(--border);
-      border-radius: 28px;
+      border-radius: 24px;
       background: linear-gradient(150deg, rgba(255, 247, 236, 0.96), rgba(250, 236, 217, 0.9));
       box-shadow: var(--shadow);
     }
@@ -60,16 +61,15 @@
 
     .hero p {
       margin: 0;
-      max-width: 60ch;
       color: var(--muted);
-      line-height: 1.7;
+      line-height: 1.65;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: 1.3fr 0.9fr;
-      gap: 24px;
-      margin-top: 24px;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 16px;
     }
 
     .panel {
@@ -80,14 +80,14 @@
     }
 
     .panel-inner {
-      padding: 24px;
+      padding: 18px;
     }
 
     .settings {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-      margin-bottom: 18px;
+      gap: 12px;
+      margin-bottom: 14px;
     }
 
     .field {
@@ -119,6 +119,7 @@
       padding: 14px 16px;
       background: #fffdf8;
       color: var(--text);
+      font-size: 16px;
       transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
     }
 
@@ -150,10 +151,7 @@
     }
 
     .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin: 18px 0 20px;
+      margin: 8px 0 16px;
     }
 
     .primary {
@@ -161,41 +159,27 @@
       background: linear-gradient(135deg, var(--accent), var(--accent-strong));
     }
 
-    .secondary {
-      color: var(--accent-strong);
-      background: rgba(196, 99, 46, 0.12);
+    .button-row .primary {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 1rem;
     }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .stat-card {
-      padding: 16px;
+    .session-note {
+      margin-bottom: 14px;
+      padding: 14px 16px;
       border-radius: 18px;
       background: var(--panel-strong);
       border: 1px solid rgba(89, 54, 32, 0.09);
-    }
-
-    .stat-card strong {
-      display: block;
-      margin-top: 8px;
-      font-size: clamp(1.1rem, 2vw, 1.5rem);
-    }
-
-    .stat-card span {
       color: var(--muted);
-      font-size: 0.9rem;
+      line-height: 1.5;
     }
 
     .display-board {
       display: grid;
       place-items: center;
-      min-height: 240px;
-      border-radius: 26px;
+      min-height: 220px;
+      border-radius: 24px;
       border: 1px dashed rgba(143, 61, 18, 0.22);
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(253, 243, 229, 0.94)),
@@ -206,13 +190,13 @@
           transparent 12px,
           transparent 26px
         );
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       overflow: hidden;
     }
 
     .display-number {
       font-family: var(--font-display);
-      font-size: clamp(3.4rem, 12vw, 7rem);
+      font-size: clamp(4rem, 18vw, 7rem);
       font-weight: 800;
       letter-spacing: 0.08em;
       opacity: 0;
@@ -230,6 +214,11 @@
       grid-template-columns: 1fr auto;
       gap: 12px;
       align-items: center;
+    }
+
+    .answer-row input,
+    .answer-row button {
+      min-height: 54px;
     }
 
     .status {
@@ -251,17 +240,17 @@
     }
 
     .summary-box {
-      padding: 18px;
+      padding: 16px;
       border-radius: 20px;
       background: linear-gradient(145deg, rgba(255, 250, 242, 0.98), rgba(246, 234, 220, 0.95));
       border: 1px solid rgba(89, 54, 32, 0.09);
-      margin-top: 18px;
-      line-height: 1.7;
+      margin-top: 14px;
+      line-height: 1.6;
       color: var(--muted);
     }
 
-    .best-record {
-      padding: 20px;
+    .history-card {
+      padding: 18px;
       border-radius: 22px;
       background: linear-gradient(145deg, rgba(196, 99, 46, 0.14), rgba(255, 247, 236, 0.96));
       border: 1px solid rgba(196, 99, 46, 0.16);
@@ -270,7 +259,7 @@
     .best-score-value {
       margin: 8px 0 4px;
       font-family: var(--font-display);
-      font-size: clamp(2.2rem, 6vw, 3.4rem);
+      font-size: clamp(2rem, 11vw, 3rem);
       font-weight: 800;
       line-height: 1;
     }
@@ -278,16 +267,13 @@
     .history-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 18px;
-      max-height: 540px;
-      overflow: auto;
-      padding-right: 4px;
+      gap: 10px;
+      margin-top: 16px;
     }
 
     .history-item {
-      padding: 16px;
-      border-radius: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
       background: rgba(255, 249, 241, 0.95);
       border: 1px solid rgba(89, 54, 32, 0.09);
     }
@@ -300,8 +286,8 @@
     .history-item span {
       display: block;
       color: var(--muted);
-      line-height: 1.6;
-      font-size: 0.94rem;
+      line-height: 1.5;
+      font-size: 0.92rem;
     }
 
     .history-empty {
@@ -312,31 +298,84 @@
       border: 1px dashed rgba(89, 54, 32, 0.16);
     }
 
-    @media (max-width: 920px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     @media (max-width: 640px) {
       .shell {
-        width: min(100% - 20px, 1120px);
-        padding-top: 20px;
+        width: min(100% - 16px, 680px);
+        padding: 10px 0 calc(24px + env(safe-area-inset-bottom));
       }
 
-      .hero,
+      .hero {
+        padding: 16px;
+        border-radius: 20px;
+      }
+
+      .hero h1 {
+        margin-bottom: 8px;
+        font-size: clamp(1.6rem, 8vw, 2.3rem);
+      }
+
+      .hero p {
+        font-size: 0.94rem;
+        line-height: 1.55;
+      }
+
       .panel-inner {
-        padding: 18px;
+        padding: 16px;
       }
 
       .settings,
-      .stats,
       .answer-row {
         grid-template-columns: 1fr;
       }
 
+      .field label,
+      .section-title {
+        font-size: 0.82rem;
+      }
+
+      .button-row {
+        margin-bottom: 12px;
+      }
+
+      .button-row .primary {
+        min-height: 56px;
+      }
+
+      .session-note,
+      .summary-box,
+      .history-item,
+      .history-empty {
+        font-size: 0.94rem;
+      }
+
       .display-board {
-        min-height: 180px;
+        min-height: 200px;
+        border-radius: 20px;
+      }
+
+      .display-number {
+        font-size: clamp(3.5rem, 22vw, 5.4rem);
+      }
+
+      .answer-row {
+        position: sticky;
+        bottom: 0;
+        z-index: 5;
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 20px;
+        background: rgba(248, 244, 237, 0.94);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 -10px 30px rgba(86, 50, 22, 0.08);
+      }
+
+      .answer-row button {
+        width: 100%;
+        min-height: 56px;
+      }
+
+      .history-card {
+        padding: 16px;
       }
     }
   </style>
@@ -346,8 +385,7 @@
     <section class="hero">
       <h1>フラッシュ暗算ゲーム</h1>
       <p>
-        数字が一瞬ずつ連続で表示されます。見えた数字の合計を答えて、次のラウンドへ進みましょう。
-        正解すると表示される数字の数が増え、速度も少しずつ上がります。3回ミスするとゲーム終了です。
+        数字を見て、合計を入れるだけ。片手でも遊びやすい、スマホ向けのシンプル版です。
       </p>
     </section>
 
@@ -377,34 +415,10 @@
 
           <div class="button-row">
             <button id="start-button" class="primary" type="button">スタート</button>
-            <button id="restart-button" class="secondary" type="button">リスタート</button>
           </div>
 
-          <div class="stats">
-            <div class="stat-card">
-              <span>現在ラウンド</span>
-              <strong id="round-value">0</strong>
-            </div>
-            <div class="stat-card">
-              <span>残りライフ</span>
-              <strong id="lives-value">3</strong>
-            </div>
-            <div class="stat-card">
-              <span>表示個数</span>
-              <strong id="count-value">2</strong>
-            </div>
-            <div class="stat-card">
-              <span>固定桁数</span>
-              <strong id="digit-value">-</strong>
-            </div>
-            <div class="stat-card">
-              <span>現在速度</span>
-              <strong id="speed-value">-</strong>
-            </div>
-            <div class="stat-card">
-              <span>直前の回答時間</span>
-              <strong id="last-answer-value">-</strong>
-            </div>
+          <div id="session-note" class="session-note">
+            2個の数字から開始します。正解すると1個ずつ増えます。
           </div>
 
           <div class="display-board" aria-live="polite">
@@ -416,6 +430,8 @@
               id="answer-input"
               type="text"
               inputmode="numeric"
+              enterkeyhint="done"
+              pattern="-?[0-9]*"
               autocomplete="off"
               placeholder="合計を入力"
               disabled
@@ -425,21 +441,17 @@
 
           <div id="status-message" class="status neutral">スタートを押すとゲームを始めます。</div>
           <div id="summary-box" class="summary-box">
-            最高ラウンドや回答時間はプレイ後にここへ表示されます。履歴はこのブラウザ内に保存されます。
+            ベストと最近の記録だけをこのブラウザに保存します。
           </div>
         </div>
       </section>
 
       <aside class="panel">
         <div class="panel-inner">
-          <section class="best-record">
-            <div class="section-title">Best Score</div>
+          <section class="history-card">
+            <div class="section-title">Best</div>
             <div id="best-score-value" class="best-score-value">0</div>
             <div id="best-score-detail" class="status neutral">まだ記録はありません。</div>
-          </section>
-
-          <section>
-            <div class="section-title" style="margin-top: 22px;">プレイ履歴</div>
             <div id="history-list" class="history-list"></div>
           </section>
         </div>
@@ -479,18 +491,12 @@
       digitSelect: document.getElementById("digit-select"),
       speedSelect: document.getElementById("speed-select"),
       startButton: document.getElementById("start-button"),
-      restartButton: document.getElementById("restart-button"),
       submitButton: document.getElementById("submit-button"),
       answerInput: document.getElementById("answer-input"),
       displayNumber: document.getElementById("display-number"),
       statusMessage: document.getElementById("status-message"),
+      sessionNote: document.getElementById("session-note"),
       summaryBox: document.getElementById("summary-box"),
-      roundValue: document.getElementById("round-value"),
-      livesValue: document.getElementById("lives-value"),
-      countValue: document.getElementById("count-value"),
-      digitValue: document.getElementById("digit-value"),
-      speedValue: document.getElementById("speed-value"),
-      lastAnswerValue: document.getElementById("last-answer-value"),
       bestScoreValue: document.getElementById("best-score-value"),
       bestScoreDetail: document.getElementById("best-score-detail"),
       historyList: document.getElementById("history-list")
@@ -588,13 +594,19 @@
       elements.statusMessage.className = `status ${tone}`;
     }
 
-    function updateStats() {
-      elements.roundValue.textContent = String(state.round);
-      elements.livesValue.textContent = String(state.lives);
-      elements.countValue.textContent = String(state.currentCount);
-      elements.digitValue.textContent = state.round === 0 ? "-" : `${state.digitLength}桁`;
-      elements.speedValue.textContent = state.round === 0 ? "-" : formatSeconds(state.displaySeconds);
-      elements.lastAnswerValue.textContent = formatMs(state.lastAnswerMs);
+    function updateSessionNote() {
+      if (state.isGameOver) {
+        elements.sessionNote.textContent = `今回の到達ラウンドは ${state.round}。もう一度遊べます。`;
+        return;
+      }
+
+      if (state.round === 0) {
+        elements.sessionNote.textContent = "2個の数字から開始します。正解すると1個ずつ増えます。";
+        return;
+      }
+
+      elements.sessionNote.textContent =
+        `${state.currentCount}個表示 / ${state.digitLength}桁 / 速度 ${formatSeconds(state.displaySeconds)} / 残り${state.lives}回ミス可`;
     }
 
     function updateControlStates() {
@@ -604,8 +616,8 @@
 
       elements.digitSelect.disabled = playing || state.isShowingSequence || state.isTransitioning;
       elements.speedSelect.disabled = playing || state.isShowingSequence || state.isTransitioning;
-      elements.startButton.disabled = playing || state.isShowingSequence || state.isTransitioning;
-      elements.restartButton.disabled = state.isShowingSequence;
+      elements.startButton.disabled = state.isShowingSequence || state.isTransitioning;
+      elements.startButton.textContent = playing ? "やりなおす" : "スタート";
       elements.answerInput.disabled = !canAnswer;
       elements.submitButton.disabled = !canAnswer;
     }
@@ -620,7 +632,7 @@
 
       elements.bestScoreValue.textContent = best ? String(best.maxRound) : "0";
       elements.bestScoreDetail.textContent = best
-        ? `${best.digitLength}桁 / 初期速度 ${best.initialDisplaySeconds.toFixed(1)}秒 / 最速 ${formatMs(best.bestAnswerMs)}`
+        ? `${best.digitLength}桁 / 初期 ${best.initialDisplaySeconds.toFixed(1)}秒 / 最速 ${formatMs(best.bestAnswerMs)}`
         : "まだ記録はありません。";
       elements.bestScoreDetail.className = "status neutral";
     }
@@ -631,26 +643,26 @@
       if (!state.historyRecords.length) {
         const empty = document.createElement("div");
         empty.className = "history-empty";
-        empty.textContent = "まだ履歴はありません。最初のプレイ結果がここに表示されます。";
+        empty.textContent = "最近の記録はここに3件だけ表示されます。";
         elements.historyList.appendChild(empty);
         return;
       }
 
       const sorted = [...state.historyRecords].sort((a, b) => {
         return new Date(b.playedAt).getTime() - new Date(a.playedAt).getTime();
-      });
+      }).slice(0, 3);
 
       for (const record of sorted) {
         const item = document.createElement("article");
         item.className = "history-item";
 
         const title = document.createElement("strong");
-        title.textContent = `${formatDateTime(record.playedAt)} / ラウンド ${record.maxRound}`;
+        title.textContent = `${formatDateTime(record.playedAt)} / R${record.maxRound}`;
 
         const detail = document.createElement("span");
         detail.textContent =
-          `${record.digitLength}桁, 初期速度 ${record.initialDisplaySeconds.toFixed(1)}秒, ` +
-          `最大個数 ${record.maxCount}, 平均 ${formatMs(record.averageAnswerMs)}, 最速 ${formatMs(record.bestAnswerMs)}`;
+          `${record.digitLength}桁 / ${record.initialDisplaySeconds.toFixed(1)}秒 / ` +
+          `最大 ${record.maxCount}個 / 最速 ${formatMs(record.bestAnswerMs)}`;
 
         item.appendChild(title);
         item.appendChild(detail);
@@ -688,8 +700,8 @@
       elements.answerInput.value = "";
       showDisplay("Ready?", true);
       setStatus("スタートを押すとゲームを始めます。", "neutral");
-      renderSummary("最高ラウンドや回答時間はプレイ後にここへ表示されます。履歴はこのブラウザ内に保存されます。");
-      updateStats();
+      renderSummary("ベストと最近の記録だけをこのブラウザに保存します。");
+      updateSessionNote();
       updateControlStates();
     }
 
@@ -712,8 +724,7 @@
       renderBestScore();
       renderHistory();
       renderSummary(
-        `ゲーム終了。到達ラウンド ${record.maxRound}、最大表示個数 ${record.maxCount}、` +
-        `平均回答時間 ${formatMs(record.averageAnswerMs)}、最速回答時間 ${formatMs(record.bestAnswerMs)}。`
+        `ゲーム終了。ラウンド ${record.maxRound}、最大 ${record.maxCount}個、最速 ${formatMs(record.bestAnswerMs)}。`
       );
     }
 
@@ -737,6 +748,7 @@
       updateControlStates();
       showDisplay("?", true);
       setStatus("合計を入力してください。Enterでも送信できます。", "neutral");
+      updateSessionNote();
       elements.answerInput.focus();
     }
 
@@ -749,10 +761,10 @@
       state.sequence = generateSequence(state.currentCount, state.digitLength);
       state.correctSum = state.sequence.reduce((sum, value) => sum + value, 0);
 
-      updateStats();
+      updateSessionNote();
       setStatus(`ラウンド ${state.round}。${state.currentCount}個の数字を覚えましょう。`, "neutral");
       await showSequence(state.sequence);
-      updateStats();
+      updateSessionNote();
     }
 
     async function queueNextRound(message, tone) {
@@ -775,6 +787,7 @@
       updateControlStates();
       showDisplay("Finish", true);
       setStatus(extraMessage, "warn");
+      updateSessionNote();
       persistGameResult();
     }
 
@@ -801,11 +814,12 @@
       const elapsedMs = Math.round(performance.now() - state.answerStartedAt);
       state.lastAnswerMs = elapsedMs;
       state.answerTimes.push(elapsedMs);
-      updateStats();
+      updateSessionNote();
 
       if (answerValue === state.correctSum) {
         const previousCount = state.currentCount;
         state.currentCount += 1;
+        updateSessionNote();
         renderSummary(
           `正解。ラウンド ${state.round} は ${previousCount}個の数字でした。` +
           `回答時間は ${formatMs(elapsedMs)}。次は ${state.currentCount}個になります。`
@@ -815,7 +829,7 @@
       }
 
       state.lives -= 1;
-      updateStats();
+      updateSessionNote();
 
       if (state.lives <= 0) {
         gameOver(`不正解。正解は ${state.correctSum} でした。3回ミスしたため終了です。`);
@@ -839,10 +853,6 @@
     }
 
     elements.startButton.addEventListener("click", () => {
-      startGame();
-    });
-
-    elements.restartButton.addEventListener("click", () => {
       startGame();
     });
 
