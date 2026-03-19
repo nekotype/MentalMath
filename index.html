@@ -466,6 +466,7 @@
     const INITIAL_LIVES = 3;
     const BETWEEN_MS = 140;
     const NEXT_ROUND_DELAY_MS = 900;
+    const RESULT_FLASH_MS = 520;
 
     const state = {
       round: 0,
@@ -679,6 +680,11 @@
       elements.displayNumber.classList.toggle("visible", visible);
     }
 
+    async function flashResult(symbol, value) {
+      showDisplay(`${symbol} ${value}`, true);
+      await sleep(RESULT_FLASH_MS);
+    }
+
     function resetForNewGame() {
       clearPendingTimeout();
       state.round = 0;
@@ -824,12 +830,14 @@
           `正解。ラウンド ${state.round} は ${previousCount}個の数字でした。` +
           `回答時間は ${formatMs(elapsedMs)}。次は ${state.currentCount}個になります。`
         );
+        await flashResult("○", state.correctSum);
         await queueNextRound(`正解です。${formatMs(elapsedMs)} でクリア。次のラウンドへ進みます。`, "ok");
         return;
       }
 
       state.lives -= 1;
       updateSessionNote();
+      await flashResult("×", state.correctSum);
 
       if (state.lives <= 0) {
         gameOver(`不正解。正解は ${state.correctSum} でした。3回ミスしたため終了です。`);
