@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フラッシュ暗算ゲーム</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --panel: rgba(255, 250, 242, 0.92);
+      --panel-strong: #fff7ec;
+      --text: #2d1d13;
+      --muted: #7a6356;
+      --accent: #c4632e;
+      --accent-strong: #8f3d12;
+      --ok: #1f7a53;
+      --warn: #b63e2b;
+      --border: rgba(89, 54, 32, 0.14);
+      --shadow: 0 20px 60px rgba(86, 50, 22, 0.12);
+      --font-display: "Avenir Next", "Hiragino Sans", "Yu Gothic", sans-serif;
+      --font-body: "Hiragino Sans", "Yu Gothic", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-body);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 213, 163, 0.9), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(214, 127, 77, 0.28), transparent 28%),
+        linear-gradient(160deg, #f8f4ed 0%, #efe4d3 52%, #e8d4bc 100%);
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .hero {
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background: linear-gradient(150deg, rgba(255, 247, 236, 0.96), rgba(250, 236, 217, 0.9));
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      line-height: 1;
+      letter-spacing: 0.03em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 60ch;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-inner {
+      padding: 24px;
+    }
+
+    .settings {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label,
+    .section-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    select,
+    input,
+    button {
+      font: inherit;
+    }
+
+    select,
+    input {
+      width: 100%;
+      border: 1px solid rgba(89, 54, 32, 0.18);
+      border-radius: 14px;
+      padding: 14px 16px;
+      background: #fffdf8;
+      color: var(--text);
+      transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+
+    select:focus,
+    input:focus {
+      outline: none;
+      border-color: rgba(196, 99, 46, 0.7);
+      box-shadow: 0 0 0 4px rgba(196, 99, 46, 0.12);
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(143, 61, 18, 0.18);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      box-shadow: none;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 18px 0 20px;
+    }
+
+    .primary {
+      color: #fff8f2;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    }
+
+    .secondary {
+      color: var(--accent-strong);
+      background: rgba(196, 99, 46, 0.12);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--panel-strong);
+      border: 1px solid rgba(89, 54, 32, 0.09);
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-top: 8px;
+      font-size: clamp(1.1rem, 2vw, 1.5rem);
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .display-board {
+      display: grid;
+      place-items: center;
+      min-height: 240px;
+      border-radius: 26px;
+      border: 1px dashed rgba(143, 61, 18, 0.22);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(253, 243, 229, 0.94)),
+        repeating-linear-gradient(
+          -35deg,
+          rgba(196, 99, 46, 0.03),
+          rgba(196, 99, 46, 0.03) 12px,
+          transparent 12px,
+          transparent 26px
+        );
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .display-number {
+      font-family: var(--font-display);
+      font-size: clamp(3.4rem, 12vw, 7rem);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+      transition: opacity 120ms ease, transform 120ms ease;
+    }
+
+    .display-number.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .answer-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .status {
+      min-height: 28px;
+      margin-top: 14px;
+      font-weight: 700;
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+
+    .status.warn {
+      color: var(--warn);
+    }
+
+    .status.neutral {
+      color: var(--muted);
+    }
+
+    .summary-box {
+      padding: 18px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(255, 250, 242, 0.98), rgba(246, 234, 220, 0.95));
+      border: 1px solid rgba(89, 54, 32, 0.09);
+      margin-top: 18px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .best-record {
+      padding: 20px;
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(196, 99, 46, 0.14), rgba(255, 247, 236, 0.96));
+      border: 1px solid rgba(196, 99, 46, 0.16);
+    }
+
+    .best-score-value {
+      margin: 8px 0 4px;
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 6vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 18px;
+      max-height: 540px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .history-item {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 249, 241, 0.95);
+      border: 1px solid rgba(89, 54, 32, 0.09);
+    }
+
+    .history-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .history-item span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.94rem;
+    }
+
+    .history-empty {
+      padding: 20px;
+      border-radius: 18px;
+      background: rgba(255, 249, 241, 0.85);
+      color: var(--muted);
+      border: 1px dashed rgba(89, 54, 32, 0.16);
+    }
+
+    @media (max-width: 920px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 20px, 1120px);
+        padding-top: 20px;
+      }
+
+      .hero,
+      .panel-inner {
+        padding: 18px;
+      }
+
+      .settings,
+      .stats,
+      .answer-row {
+        grid-template-columns: 1fr;
+      }
+
+      .display-board {
+        min-height: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <h1>フラッシュ暗算ゲーム</h1>
+      <p>
+        数字が一瞬ずつ連続で表示されます。見えた数字の合計を答えて、次のラウンドへ進みましょう。
+        正解すると表示される数字の数が増え、速度も少しずつ上がります。3回ミスするとゲーム終了です。
+      </p>
+    </section>
+
+    <main class="grid">
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="settings">
+            <div class="field">
+              <label for="digit-select">桁数</label>
+              <select id="digit-select">
+                <option value="1">1桁</option>
+                <option value="2">2桁</option>
+                <option value="3">3桁</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="speed-select">初期表示速度</label>
+              <select id="speed-select">
+                <option value="0.1">0.1秒</option>
+                <option value="0.2">0.2秒</option>
+                <option value="0.3" selected>0.3秒</option>
+                <option value="0.4">0.4秒</option>
+                <option value="0.5">0.5秒</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="start-button" class="primary" type="button">スタート</button>
+            <button id="restart-button" class="secondary" type="button">リスタート</button>
+          </div>
+
+          <div class="stats">
+            <div class="stat-card">
+              <span>現在ラウンド</span>
+              <strong id="round-value">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>残りライフ</span>
+              <strong id="lives-value">3</strong>
+            </div>
+            <div class="stat-card">
+              <span>表示個数</span>
+              <strong id="count-value">2</strong>
+            </div>
+            <div class="stat-card">
+              <span>固定桁数</span>
+              <strong id="digit-value">-</strong>
+            </div>
+            <div class="stat-card">
+              <span>現在速度</span>
+              <strong id="speed-value">-</strong>
+            </div>
+            <div class="stat-card">
+              <span>直前の回答時間</span>
+              <strong id="last-answer-value">-</strong>
+            </div>
+          </div>
+
+          <div class="display-board" aria-live="polite">
+            <div id="display-number" class="display-number">Ready?</div>
+          </div>
+
+          <div class="answer-row">
+            <input
+              id="answer-input"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="合計を入力"
+              disabled
+            >
+            <button id="submit-button" class="primary" type="button" disabled>送信</button>
+          </div>
+
+          <div id="status-message" class="status neutral">スタートを押すとゲームを始めます。</div>
+          <div id="summary-box" class="summary-box">
+            最高ラウンドや回答時間はプレイ後にここへ表示されます。履歴はこのブラウザ内に保存されます。
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div class="panel-inner">
+          <section class="best-record">
+            <div class="section-title">Best Score</div>
+            <div id="best-score-value" class="best-score-value">0</div>
+            <div id="best-score-detail" class="status neutral">まだ記録はありません。</div>
+          </section>
+
+          <section>
+            <div class="section-title" style="margin-top: 22px;">プレイ履歴</div>
+            <div id="history-list" class="history-list"></div>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "mental-math-history-v1";
+    const MIN_SECONDS = 0.1;
+    const BASE_COUNT = 2;
+    const INITIAL_LIVES = 3;
+    const BETWEEN_MS = 140;
+    const NEXT_ROUND_DELAY_MS = 900;
+
+    const state = {
+      round: 0,
+      currentCount: BASE_COUNT,
+      digitLength: 1,
+      initialDisplaySeconds: 0.3,
+      displaySeconds: 0.3,
+      lives: INITIAL_LIVES,
+      sequence: [],
+      correctSum: 0,
+      answerStartedAt: 0,
+      lastAnswerMs: null,
+      answerTimes: [],
+      isShowingSequence: false,
+      isAwaitingAnswer: false,
+      isTransitioning: false,
+      isGameOver: false,
+      historyRecords: [],
+      pendingTimeout: null
+    };
+
+    const elements = {
+      digitSelect: document.getElementById("digit-select"),
+      speedSelect: document.getElementById("speed-select"),
+      startButton: document.getElementById("start-button"),
+      restartButton: document.getElementById("restart-button"),
+      submitButton: document.getElementById("submit-button"),
+      answerInput: document.getElementById("answer-input"),
+      displayNumber: document.getElementById("display-number"),
+      statusMessage: document.getElementById("status-message"),
+      summaryBox: document.getElementById("summary-box"),
+      roundValue: document.getElementById("round-value"),
+      livesValue: document.getElementById("lives-value"),
+      countValue: document.getElementById("count-value"),
+      digitValue: document.getElementById("digit-value"),
+      speedValue: document.getElementById("speed-value"),
+      lastAnswerValue: document.getElementById("last-answer-value"),
+      bestScoreValue: document.getElementById("best-score-value"),
+      bestScoreDetail: document.getElementById("best-score-detail"),
+      historyList: document.getElementById("history-list")
+    };
+
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          state.historyRecords = [];
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        state.historyRecords = Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        state.historyRecords = [];
+      }
+    }
+
+    function saveHistory() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.historyRecords));
+    }
+
+    function getMinValueForDigits(digitLength) {
+      if (digitLength === 1) return 0;
+      return Math.pow(10, digitLength - 1);
+    }
+
+    function getMaxValueForDigits(digitLength) {
+      if (digitLength === 1) return 9;
+      return Math.pow(10, digitLength) - 1;
+    }
+
+    function generateNumber(digitLength) {
+      const min = getMinValueForDigits(digitLength);
+      const max = getMaxValueForDigits(digitLength);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateSequence(count, digitLength) {
+      return Array.from({ length: count }, () => generateNumber(digitLength));
+    }
+
+    function computeDisplaySeconds(initialSeconds, round) {
+      const step = Math.max(0, round - 1) * 0.02;
+      const value = initialSeconds - step;
+      return Math.max(MIN_SECONDS, Number(value.toFixed(2)));
+    }
+
+    function average(values) {
+      if (!values.length) return null;
+      const total = values.reduce((sum, value) => sum + value, 0);
+      return total / values.length;
+    }
+
+    function formatMs(ms) {
+      if (ms == null) return "-";
+      return `${(ms / 1000).toFixed(2)}秒`;
+    }
+
+    function formatSeconds(seconds) {
+      return `${seconds.toFixed(1)}秒`;
+    }
+
+    function formatDateTime(isoString) {
+      const date = new Date(isoString);
+      if (Number.isNaN(date.getTime())) return isoString;
+      return date.toLocaleString("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function clearPendingTimeout() {
+      if (state.pendingTimeout) {
+        clearTimeout(state.pendingTimeout);
+        state.pendingTimeout = null;
+      }
+    }
+
+    function sleep(ms) {
+      return new Promise((resolve) => {
+        state.pendingTimeout = window.setTimeout(() => {
+          state.pendingTimeout = null;
+          resolve();
+        }, ms);
+      });
+    }
+
+    function setStatus(message, tone) {
+      elements.statusMessage.textContent = message;
+      elements.statusMessage.className = `status ${tone}`;
+    }
+
+    function updateStats() {
+      elements.roundValue.textContent = String(state.round);
+      elements.livesValue.textContent = String(state.lives);
+      elements.countValue.textContent = String(state.currentCount);
+      elements.digitValue.textContent = state.round === 0 ? "-" : `${state.digitLength}桁`;
+      elements.speedValue.textContent = state.round === 0 ? "-" : formatSeconds(state.displaySeconds);
+      elements.lastAnswerValue.textContent = formatMs(state.lastAnswerMs);
+    }
+
+    function updateControlStates() {
+      const playing = state.round > 0 && !state.isGameOver;
+      const locked = state.isShowingSequence || state.isTransitioning;
+      const canAnswer = state.isAwaitingAnswer && !locked && !state.isGameOver;
+
+      elements.digitSelect.disabled = playing || state.isShowingSequence || state.isTransitioning;
+      elements.speedSelect.disabled = playing || state.isShowingSequence || state.isTransitioning;
+      elements.startButton.disabled = playing || state.isShowingSequence || state.isTransitioning;
+      elements.restartButton.disabled = state.isShowingSequence;
+      elements.answerInput.disabled = !canAnswer;
+      elements.submitButton.disabled = !canAnswer;
+    }
+
+    function renderBestScore() {
+      const best = state.historyRecords.reduce((current, record) => {
+        if (!current || record.maxRound > current.maxRound) {
+          return record;
+        }
+        return current;
+      }, null);
+
+      elements.bestScoreValue.textContent = best ? String(best.maxRound) : "0";
+      elements.bestScoreDetail.textContent = best
+        ? `${best.digitLength}桁 / 初期速度 ${best.initialDisplaySeconds.toFixed(1)}秒 / 最速 ${formatMs(best.bestAnswerMs)}`
+        : "まだ記録はありません。";
+      elements.bestScoreDetail.className = "status neutral";
+    }
+
+    function renderHistory() {
+      elements.historyList.innerHTML = "";
+
+      if (!state.historyRecords.length) {
+        const empty = document.createElement("div");
+        empty.className = "history-empty";
+        empty.textContent = "まだ履歴はありません。最初のプレイ結果がここに表示されます。";
+        elements.historyList.appendChild(empty);
+        return;
+      }
+
+      const sorted = [...state.historyRecords].sort((a, b) => {
+        return new Date(b.playedAt).getTime() - new Date(a.playedAt).getTime();
+      });
+
+      for (const record of sorted) {
+        const item = document.createElement("article");
+        item.className = "history-item";
+
+        const title = document.createElement("strong");
+        title.textContent = `${formatDateTime(record.playedAt)} / ラウンド ${record.maxRound}`;
+
+        const detail = document.createElement("span");
+        detail.textContent =
+          `${record.digitLength}桁, 初期速度 ${record.initialDisplaySeconds.toFixed(1)}秒, ` +
+          `最大個数 ${record.maxCount}, 平均 ${formatMs(record.averageAnswerMs)}, 最速 ${formatMs(record.bestAnswerMs)}`;
+
+        item.appendChild(title);
+        item.appendChild(detail);
+        elements.historyList.appendChild(item);
+      }
+    }
+
+    function renderSummary(message) {
+      elements.summaryBox.textContent = message;
+    }
+
+    function showDisplay(text, visible) {
+      elements.displayNumber.textContent = text;
+      elements.displayNumber.classList.toggle("visible", visible);
+    }
+
+    function resetForNewGame() {
+      clearPendingTimeout();
+      state.round = 0;
+      state.currentCount = BASE_COUNT;
+      state.lives = INITIAL_LIVES;
+      state.sequence = [];
+      state.correctSum = 0;
+      state.answerStartedAt = 0;
+      state.lastAnswerMs = null;
+      state.answerTimes = [];
+      state.isShowingSequence = false;
+      state.isAwaitingAnswer = false;
+      state.isTransitioning = false;
+      state.isGameOver = false;
+      state.digitLength = Number(elements.digitSelect.value);
+      state.initialDisplaySeconds = Number(elements.speedSelect.value);
+      state.displaySeconds = state.initialDisplaySeconds;
+
+      elements.answerInput.value = "";
+      showDisplay("Ready?", true);
+      setStatus("スタートを押すとゲームを始めます。", "neutral");
+      renderSummary("最高ラウンドや回答時間はプレイ後にここへ表示されます。履歴はこのブラウザ内に保存されます。");
+      updateStats();
+      updateControlStates();
+    }
+
+    function buildRecord() {
+      return {
+        playedAt: new Date().toISOString(),
+        digitLength: state.digitLength,
+        initialDisplaySeconds: state.initialDisplaySeconds,
+        maxRound: state.round,
+        maxCount: Math.max(BASE_COUNT, state.currentCount - 1),
+        averageAnswerMs: average(state.answerTimes),
+        bestAnswerMs: state.answerTimes.length ? Math.min(...state.answerTimes) : null
+      };
+    }
+
+    function persistGameResult() {
+      const record = buildRecord();
+      state.historyRecords.push(record);
+      saveHistory();
+      renderBestScore();
+      renderHistory();
+      renderSummary(
+        `ゲーム終了。到達ラウンド ${record.maxRound}、最大表示個数 ${record.maxCount}、` +
+        `平均回答時間 ${formatMs(record.averageAnswerMs)}、最速回答時間 ${formatMs(record.bestAnswerMs)}。`
+      );
+    }
+
+    async function showSequence(sequence) {
+      state.isShowingSequence = true;
+      state.isAwaitingAnswer = false;
+      state.isTransitioning = false;
+      updateControlStates();
+
+      for (const value of sequence) {
+        showDisplay(String(value), true);
+        await sleep(state.displaySeconds * 1000);
+        showDisplay("", false);
+        await sleep(BETWEEN_MS);
+      }
+
+      state.isShowingSequence = false;
+      state.isAwaitingAnswer = true;
+      state.answerStartedAt = performance.now();
+      elements.answerInput.value = "";
+      updateControlStates();
+      showDisplay("?", true);
+      setStatus("合計を入力してください。Enterでも送信できます。", "neutral");
+      elements.answerInput.focus();
+    }
+
+    async function startRound() {
+      clearPendingTimeout();
+      state.isTransitioning = false;
+      state.isAwaitingAnswer = false;
+      state.round += 1;
+      state.displaySeconds = computeDisplaySeconds(state.initialDisplaySeconds, state.round);
+      state.sequence = generateSequence(state.currentCount, state.digitLength);
+      state.correctSum = state.sequence.reduce((sum, value) => sum + value, 0);
+
+      updateStats();
+      setStatus(`ラウンド ${state.round}。${state.currentCount}個の数字を覚えましょう。`, "neutral");
+      await showSequence(state.sequence);
+      updateStats();
+    }
+
+    async function queueNextRound(message, tone) {
+      state.isTransitioning = true;
+      state.isAwaitingAnswer = false;
+      updateControlStates();
+      setStatus(message, tone);
+      await sleep(NEXT_ROUND_DELAY_MS);
+      if (!state.isGameOver) {
+        await startRound();
+      }
+    }
+
+    function gameOver(extraMessage) {
+      state.isGameOver = true;
+      state.isAwaitingAnswer = false;
+      state.isShowingSequence = false;
+      state.isTransitioning = false;
+      clearPendingTimeout();
+      updateControlStates();
+      showDisplay("Finish", true);
+      setStatus(extraMessage, "warn");
+      persistGameResult();
+    }
+
+    async function submitAnswer() {
+      if (!state.isAwaitingAnswer || state.isShowingSequence || state.isTransitioning || state.isGameOver) {
+        return;
+      }
+
+      const rawValue = elements.answerInput.value.trim();
+      if (rawValue === "") {
+        setStatus("合計を入力してから送信してください。", "warn");
+        elements.answerInput.focus();
+        return;
+      }
+
+      if (!/^-?\d+$/.test(rawValue)) {
+        setStatus("整数で入力してください。同じ問題に再挑戦できます。", "warn");
+        elements.answerInput.focus();
+        elements.answerInput.select();
+        return;
+      }
+
+      const answerValue = Number(rawValue);
+      const elapsedMs = Math.round(performance.now() - state.answerStartedAt);
+      state.lastAnswerMs = elapsedMs;
+      state.answerTimes.push(elapsedMs);
+      updateStats();
+
+      if (answerValue === state.correctSum) {
+        const previousCount = state.currentCount;
+        state.currentCount += 1;
+        renderSummary(
+          `正解。ラウンド ${state.round} は ${previousCount}個の数字でした。` +
+          `回答時間は ${formatMs(elapsedMs)}。次は ${state.currentCount}個になります。`
+        );
+        await queueNextRound(`正解です。${formatMs(elapsedMs)} でクリア。次のラウンドへ進みます。`, "ok");
+        return;
+      }
+
+      state.lives -= 1;
+      updateStats();
+
+      if (state.lives <= 0) {
+        gameOver(`不正解。正解は ${state.correctSum} でした。3回ミスしたため終了です。`);
+        return;
+      }
+
+      renderSummary(
+        `不正解。正解は ${state.correctSum}、入力は ${answerValue} でした。` +
+        `残りライフは ${state.lives}。同じ個数で次のラウンドへ進みます。`
+      );
+      await queueNextRound(
+        `不正解。正解は ${state.correctSum} でした。残りライフは ${state.lives}。次のラウンドを始めます。`,
+        "warn"
+      );
+    }
+
+    async function startGame() {
+      resetForNewGame();
+      setStatus("ゲームを開始します。数字を見逃さないようにしましょう。", "neutral");
+      await startRound();
+    }
+
+    elements.startButton.addEventListener("click", () => {
+      startGame();
+    });
+
+    elements.restartButton.addEventListener("click", () => {
+      startGame();
+    });
+
+    elements.submitButton.addEventListener("click", () => {
+      submitAnswer();
+    });
+
+    elements.answerInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitAnswer();
+      }
+    });
+
+    loadHistory();
+    renderBestScore();
+    renderHistory();
+    resetForNewGame();
+  </script>
+</body>
+</html>
